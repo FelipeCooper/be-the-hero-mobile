@@ -8,6 +8,9 @@ import api from "../../services/api";
 
 export default function Incidents() {
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+
   const [total, setTotal] = useState(0);
   const [incidents, setIncidents] = useState([]);
 
@@ -16,9 +19,22 @@ export default function Incidents() {
   }
 
   async function loadIncidents() {
-    const response = await api.get("incidents");
-    setIncidents(response.data);
+    if (loading) {
+      return;
+    }
+    if (total > 0 && incidents.length === total) {
+      return;
+    }
+    setLoading(true);
+    const response = await api.get("incidents", {
+      params: {
+        page
+      }
+    });
+    setIncidents([...incidents, ...response.data]);
+    setPage(page + 1);
     setTotal(response.headers["x-total-count"]);
+    setLoading(false);
   }
   useEffect(() => {
     loadIncidents();
@@ -38,6 +54,8 @@ export default function Incidents() {
         data={incidents}
         keyExtractor={incident => String(incident.id)}
         showsVerticalScrollIndicator={false}
+        onEndReached={loadIncidents}
+        onEndReachedThreshold={0.2}
         style={styles.incidentList}
         renderItem={({ item: incident }) => (
           <View style={styles.incident}>
