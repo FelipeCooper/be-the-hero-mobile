@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Image, Text, TouchableOpacity } from "react-native";
+import { View, Image, Text, TouchableOpacity, Linking } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import styles from "./style";
@@ -12,12 +12,15 @@ export default function Detail() {
   function navigateBack() {
     navigation.goBack();
   }
-  async function sendMail() {
-    await MailComposer.composeAsync({
+  function sendMail() {
+    MailComposer.composeAsync({
       subject: "Heroi do caso: caso1",
       recipients: ["hoonter69@gmail.com"],
       body: message
     });
+  }
+  function sendWhats() {
+    Linking.openURL(`whatsapp://send?phone=5548123&text=${message}`);
   }
 
   return (
@@ -43,7 +46,7 @@ export default function Detail() {
         <Text style={styles.heroTitle}>Seja o herói desse caso</Text>
         <Text style={styles.heroDescription}>Entre em contato:</Text>
         <View style={styles.actions}>
-          <TouchableOpacity style={styles.action} onPress={() => {}}>
+          <TouchableOpacity style={styles.action} onPress={sendWhats}>
             <Text style={styles.actionText}>WhatsApp</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.action} onPress={sendMail}>
